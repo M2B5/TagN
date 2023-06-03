@@ -28,11 +28,23 @@ public class MyListener implements Listener {
     }
 
     public static void fillInventory(Player player, Material blockType) {
-        player.getInventory().clear();
-        ItemStack block = new ItemStack(blockType);
+        ItemStack itemStack = new ItemStack(blockType, 64);
+
+        // Fill the main inventory slots
         for (int i = 0; i < player.getInventory().getSize(); i++) {
-            player.getInventory().setItem(i, block);
+            player.getInventory().setItem(i, itemStack.clone());
         }
+
+        // Clear the offhand slot
+        player.getInventory().setItemInOffHand(null);
+
+        // Clear the armor slots
+        player.getInventory().setHelmet(null);
+        player.getInventory().setChestplate(null);
+        player.getInventory().setLeggings(null);
+        player.getInventory().setBoots(null);
+
+        // Update the inventory for the player
         player.updateInventory();
     }
 
@@ -84,9 +96,9 @@ public class MyListener implements Listener {
         Player player = event.getPlayer();
 
         if (!(player.isOp())) {
-            ItemStack placedBlock = event.getItemInHand();
-            if (placedBlock.getType() != Material.AIR) {
-                player.getInventory().addItem(placedBlock);
+            Material placedBlock = event.getItemInHand().getType();
+            if (placedBlock != Material.AIR) {
+                player.getInventory().addItem(new ItemStack(placedBlock, 1));
             }
         }
     }
