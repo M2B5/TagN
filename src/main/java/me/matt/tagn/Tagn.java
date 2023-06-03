@@ -12,7 +12,7 @@ public final class Tagn extends JavaPlugin {
         MyListener listener = new MyListener(this);
         getServer().getPluginManager().registerEvents(listener, this);
 
-        getLogger().info("Enabled2");
+        getLogger().info("Enabled");
     }
 
     @Override

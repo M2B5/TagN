@@ -6,9 +6,11 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
@@ -49,40 +51,18 @@ public class MyListener implements Listener {
         Player victim = (Player) event.getEntity();
 
         if (attacker == CommandSetTagger.tagger) {
-            CommandSetTagger.tagger = victim;
+            CommandSetTagger.newTagger(victim, attacker, true, plugin);
+        }
+    }
 
-            victim.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                    .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                    .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                    .append(Component.text("You are the new tagger!")).color(TextColor.color(0xFFFFFF)));
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
 
-            attacker.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                    .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                    .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                    .append(Component.text("Success! You are no longer the tagger!")).color(TextColor.color(0xFFFFFF)));
-
-            victim.setGameMode(GameMode.SPECTATOR);
-            victim.teleport(new Location(victim.getWorld(), 0.5, 141.5, 0.5));
-
-            new BukkitRunnable() {
-                int countdown = 5;
-
-                @Override
-                public void run() {
-                    if (countdown > 0) {
-                        victim.sendTitle("", ChatColor.RED + String.valueOf(countdown), 0, 20, 0);
-                        countdown--;
-                    } else {
-                        victim.sendTitle("", ChatColor.GREEN + "GO!", 0, 20, 10);
-                        // Teleport the player to a specific location
-                        Location teleportLocation = new Location(victim.getWorld(), 0, 85, 0);
-                        victim.teleport(teleportLocation);
-                        victim.setGameMode(GameMode.SURVIVAL);
-                        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
-                        cancel();
-                    }
-                }
-            }.runTaskTimer(plugin, 0, 20);
+        if (!(player.isOp())) {
+            if (event.getBlock().getType() == Material.IRON_BLOCK || event.getBlock().getType() == Material.GLASS) {
+                event.setCancelled(true);
+            }
         }
     }
 }
