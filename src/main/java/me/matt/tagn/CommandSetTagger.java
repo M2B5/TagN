@@ -77,7 +77,7 @@ public class CommandSetTagger implements CommandExecutor {
         }.runTaskTimer(plugin, 0, 20);
 
         timerTask = new BukkitRunnable() {
-            int countdown = 15; // 2 minutes in seconds
+            int countdown = 120; // 2 minutes in seconds
 
             @Override
             public void run() {
