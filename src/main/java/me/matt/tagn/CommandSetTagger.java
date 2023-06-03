@@ -1,8 +1,5 @@
 package me.matt.tagn;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,10 +27,6 @@ public class CommandSetTagger implements CommandExecutor {
     }
 
     public static void newTagger(Player nTagger, Player oTagger, Boolean didTag, JavaPlugin plugin) {
-
-        if (tagger != null) {
-            fillInventory(tagger, Material.LIME_WOOL);
-        }
 
         tagger = nTagger;
 
@@ -84,7 +77,7 @@ public class CommandSetTagger implements CommandExecutor {
         }.runTaskTimer(plugin, 0, 20);
 
         timerTask = new BukkitRunnable() {
-            int countdown = 120; // 2 minutes in seconds
+            int countdown = 15; // 2 minutes in seconds
 
             @Override
             public void run() {
@@ -93,7 +86,7 @@ public class CommandSetTagger implements CommandExecutor {
                 } else {
                     // Select a new tagger if the current tagger hasn't tagged anyone
                     if (tagger == nTagger) {
-                        selectNewTagger(plugin);
+                        selectNewTagger(plugin, nTagger);
                     }
                     cancel();
                 }
@@ -101,11 +94,18 @@ public class CommandSetTagger implements CommandExecutor {
         }.runTaskTimer(plugin, 0, 20);
     }
 
-    private static void selectNewTagger(JavaPlugin plugin) {
+    private static void selectNewTagger(JavaPlugin plugin, Player player) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        if (players.size() == 1) {
+            return;
+        }
         int randomIndex = (int) (Math.random() * players.size());
-        tagger = (Player) players.toArray()[randomIndex];
-        newTagger(tagger, null, null, plugin);
+        Player p = (Player) players.toArray()[randomIndex];
+        if (p == player) {
+            selectNewTagger(plugin, player);
+            return;
+        }
+        newTagger(p, player, false, plugin);
     }
 
     @Override

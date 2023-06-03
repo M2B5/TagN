@@ -14,13 +14,18 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import static me.matt.tagn.Tagn.sendServerMessage;
+
 public class MyListener implements Listener {
     private final JavaPlugin plugin;
 
@@ -53,12 +58,7 @@ public class MyListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        final TextComponent textComponent = Component.text("[").color(TextColor.color(0xAAAAAA))
-                .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                .append(Component.text("Welcome to TagN!")).color(TextColor.color(0xFFFFFF));
-
-        player.sendMessage(textComponent);
+        sendServerMessage(player, "Welcome to TagN!");
 
         fillInventory(player, Material.LIME_WOOL);
     }
@@ -86,7 +86,7 @@ public class MyListener implements Listener {
         Player player = event.getPlayer();
 
         if (!(player.isOp())) {
-            if (event.getBlock().getType() == Material.IRON_BLOCK || event.getBlock().getType() == Material.GLASS) {
+            if (event.getBlock().getType() == Material.IRON_BLOCK || event.getBlock().getType() == Material.GLASS || event.getBlock().getType() == Material.CYAN_TERRACOTTA) {
                 event.setCancelled(true);
             }
         }
@@ -107,6 +107,20 @@ public class MyListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        if (!(event.getPlayer().isOp())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (!(event.getPlayer().isOp())) {
             event.setCancelled(true);
         }
     }
