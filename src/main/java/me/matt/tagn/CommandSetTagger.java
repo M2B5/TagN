@@ -3,20 +3,22 @@ package me.matt.tagn;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+
+import static me.matt.tagn.MyListener.fillInventory;
+import static me.matt.tagn.Tagn.sendServerMessage;
 
 public class CommandSetTagger implements CommandExecutor {
     private final JavaPlugin plugin;
@@ -28,34 +30,58 @@ public class CommandSetTagger implements CommandExecutor {
     }
 
     public static void newTagger(Player nTagger, Player oTagger, Boolean didTag, JavaPlugin plugin) {
-        if (oTagger != null) {
-            if (didTag) {
-                oTagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                        .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                        .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                        .append(Component.text("Success! You are no longer the tagger!")).color(TextColor.color(0xFFFFFF)));
-            } else {
-                oTagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                        .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                        .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                        .append(Component.text("You are no longer the tagger!")).color(TextColor.color(0xFFFFFF)));
-            }
+
+        if (tagger != null) {
+            fillInventory(tagger, Material.LIME_WOOL);
         }
 
-        nTagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                .append(Component.text("You are the new tagger!")).color(TextColor.color(0xFFFFFF)));
+        tagger = nTagger;
+
+        fillInventory(nTagger, Material.RED_WOOL);
+
+        if (oTagger != null) {
+            fillInventory(oTagger, Material.LIME_WOOL);
+            if (didTag) {
+                sendServerMessage(oTagger, "Success! You are no longer the tagger!");
+                sendServerMessage(nTagger, "You were tagged! Now you are the tagger!");
+            } else {
+                sendServerMessage(oTagger, "Took too long! New tagger selected!");
+                sendServerMessage(nTagger, "Tagger ran out of time! You are the new tagger!");
+            }
+        } else {
+            sendServerMessage(nTagger, "You have been randomly selected as tagger!");
+        }
 
         Bukkit.getLogger().info("Tagger: " + nTagger.getName());
 
         nTagger.setGameMode(GameMode.SPECTATOR);
         nTagger.teleport(new Location(nTagger.getWorld(), 0, 141, 0));
 
+
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
         }
+
+        new BukkitRunnable() {
+            int countdown = 5;
+
+            @Override
+            public void run() {
+                if (countdown > 0) {
+                    nTagger.sendTitle("", ChatColor.RED + String.valueOf(countdown), 0, 20, 0);
+                    countdown--;
+                } else {
+                    nTagger.sendTitle("", ChatColor.GREEN + "GO!", 0, 20, 10);
+                    // Teleport the player to a specific location
+                    Location teleportLocation = new Location(nTagger.getWorld(), 0, 85, 0);
+                    nTagger.teleport(teleportLocation);
+                    nTagger.setGameMode(GameMode.SURVIVAL);
+                    nTagger.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 20);
 
         timerTask = new BukkitRunnable() {
             int countdown = 120; // 2 minutes in seconds
@@ -67,7 +93,7 @@ public class CommandSetTagger implements CommandExecutor {
                 } else {
                     // Select a new tagger if the current tagger hasn't tagged anyone
                     if (tagger == nTagger) {
-                        selectNewTagger();
+                        selectNewTagger(plugin);
                     }
                     cancel();
                 }
@@ -75,11 +101,11 @@ public class CommandSetTagger implements CommandExecutor {
         }.runTaskTimer(plugin, 0, 20);
     }
 
-    private static void selectNewTagger() {
+    private static void selectNewTagger(JavaPlugin plugin) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
         int randomIndex = (int) (Math.random() * players.size());
         tagger = (Player) players.toArray()[randomIndex];
-        newTagger(tagger, null, null, null);
+        newTagger(tagger, null, null, plugin);
     }
 
     @Override
@@ -90,10 +116,6 @@ public class CommandSetTagger implements CommandExecutor {
             Collection<? extends Player> players = player.getWorld().getPlayers();
             int randomIndex = (int) (Math.random() * players.size());
             tagger = (Player) players.toArray()[randomIndex];
-            tagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
-                    .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
-                    .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
-                    .append(Component.text("You are the new tagger!")).color(TextColor.color(0xFFFFFF)));
 
             Bukkit.getLogger().info("Tagger: " + tagger.getName());
 
