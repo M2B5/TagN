@@ -98,6 +98,10 @@ public class CommandSetTagger implements CommandExecutor {
 
     public static void selectNewTagger(JavaPlugin plugin, Player player) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        if (players.size() == 0) {
+            tagger = null;
+            return;
+        }
         if (players.size() == 1) {
             return;
         }
