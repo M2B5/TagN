@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Set;
 
-import static me.matt.tagn.CommandSetTagger.selectNewTagger;
+import static me.matt.tagn.CommandSetTagger.*;
 import static me.matt.tagn.Tagn.*;
 
 public class MyListener implements Listener {
@@ -71,14 +71,18 @@ public class MyListener implements Listener {
 
         sendServerMessage(player, "Welcome to TagN!");
 
-        fillInventory(player, Material.LIME_WOOL);
+        if (tagger != null) {
+            fillInventory(player, Material.LIME_WOOL);
 
-        player.teleport(new Location(player.getWorld(), 0, 85, 0));
-        player.setGameMode(GameMode.SURVIVAL);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
-        player.setGlowing(true);
+            player.teleport(new Location(player.getWorld(), 0, 85, 0));
+            player.setGameMode(GameMode.SURVIVAL);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
+            player.setGlowing(true);
+        } else {
+            newTagger(player, null, false, plugin);
+        }
     }
 
     @EventHandler
