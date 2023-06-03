@@ -3,10 +3,7 @@ package me.matt.tagn;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,6 +40,8 @@ public class CommandSetTagger implements CommandExecutor {
         }
 
         tagger = nTagger; // Update the tagger field to the new tagger
+
+        MyListener.fillInventory(nTagger, Material.RED_WOOL);
 
         nTagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
                 .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))

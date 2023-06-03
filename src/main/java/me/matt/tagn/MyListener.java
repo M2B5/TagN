@@ -11,9 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,6 +25,15 @@ public class MyListener implements Listener {
 
     public MyListener(JavaPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public static void fillInventory(Player player, Material blockType) {
+        player.getInventory().clear();
+        ItemStack block = new ItemStack(blockType);
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            player.getInventory().setItem(i, block);
+        }
+        player.updateInventory();
     }
 
     @EventHandler
@@ -35,6 +46,8 @@ public class MyListener implements Listener {
                 .append(Component.text("Welcome to TagN!")).color(TextColor.color(0xFFFFFF));
 
         player.sendMessage(textComponent);
+
+        fillInventory(player, Material.LIME_WOOL);
     }
 
     @EventHandler
@@ -62,6 +75,18 @@ public class MyListener implements Listener {
         if (!(player.isOp())) {
             if (event.getBlock().getType() == Material.IRON_BLOCK || event.getBlock().getType() == Material.GLASS) {
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+
+        if (!(player.isOp())) {
+            ItemStack placedBlock = event.getItemInHand();
+            if (placedBlock.getType() != Material.AIR) {
+                player.getInventory().addItem(placedBlock);
             }
         }
     }
