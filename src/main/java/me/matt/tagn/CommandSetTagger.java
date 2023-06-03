@@ -3,15 +3,17 @@ package me.matt.tagn;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -19,6 +21,7 @@ import java.util.Collection;
 public class CommandSetTagger implements CommandExecutor {
     private final JavaPlugin plugin;
     public static Player tagger;
+    private static BukkitTask timerTask;
 
     public CommandSetTagger(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -39,10 +42,6 @@ public class CommandSetTagger implements CommandExecutor {
             }
         }
 
-        tagger = nTagger; // Update the tagger field to the new tagger
-
-        MyListener.fillInventory(nTagger, Material.RED_WOOL);
-
         nTagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
                 .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
                 .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
@@ -52,25 +51,35 @@ public class CommandSetTagger implements CommandExecutor {
 
         nTagger.setGameMode(GameMode.SPECTATOR);
         nTagger.teleport(new Location(nTagger.getWorld(), 0, 141, 0));
-        new BukkitRunnable() {
-            int countdown = 5;
+
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
+
+        timerTask = new BukkitRunnable() {
+            int countdown = 120; // 2 minutes in seconds
 
             @Override
             public void run() {
                 if (countdown > 0) {
-                    nTagger.sendTitle("", ChatColor.RED + String.valueOf(countdown), 0, 20, 0);
                     countdown--;
                 } else {
-                    nTagger.sendTitle("", ChatColor.GREEN + "GO!", 0, 20, 10);
-                    // Teleport the player to a specific location
-                    Location teleportLocation = new Location(nTagger.getWorld(), 0, 85, 0);
-                    nTagger.teleport(teleportLocation);
-                    nTagger.setGameMode(GameMode.SURVIVAL);
-                    nTagger.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
+                    // Select a new tagger if the current tagger hasn't tagged anyone
+                    if (tagger == nTagger) {
+                        selectNewTagger();
+                    }
                     cancel();
                 }
             }
         }.runTaskTimer(plugin, 0, 20);
+    }
+
+    private static void selectNewTagger() {
+        Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        int randomIndex = (int) (Math.random() * players.size());
+        tagger = (Player) players.toArray()[randomIndex];
+        newTagger(tagger, null, null, null);
     }
 
     @Override
@@ -78,9 +87,9 @@ public class CommandSetTagger implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            Collection<Player> players = player.getWorld().getPlayers();
-            int random = (int) (Math.random() * players.size());
-            Player tagger = (Player) players.toArray()[random];
+            Collection<? extends Player> players = player.getWorld().getPlayers();
+            int randomIndex = (int) (Math.random() * players.size());
+            tagger = (Player) players.toArray()[randomIndex];
             tagger.sendMessage(Component.text("[").color(TextColor.color(0xAAAAAA))
                     .append(Component.text("TagN").color(TextColor.color(0xE9114E)).decoration(TextDecoration.BOLD, true))
                     .append(Component.text("] - ").color(TextColor.color(0xAAAAAA)))
