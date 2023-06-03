@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 import static me.matt.tagn.MyListener.fillInventory;
-import static me.matt.tagn.Tagn.sendServerMessage;
+import static me.matt.tagn.Tagn.*;
 
 public class CommandSetTagger implements CommandExecutor {
     private final JavaPlugin plugin;
@@ -31,9 +31,11 @@ public class CommandSetTagger implements CommandExecutor {
         tagger = nTagger;
 
         fillInventory(nTagger, Material.RED_WOOL);
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join taggers " + nTagger.getName());
 
         if (oTagger != null) {
             fillInventory(oTagger, Material.LIME_WOOL);
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + oTagger.getName());
             if (didTag) {
                 sendServerMessage(oTagger, "Success! You are no longer the tagger!");
                 sendServerMessage(nTagger, "You were tagged! Now you are the tagger!");
@@ -94,7 +96,7 @@ public class CommandSetTagger implements CommandExecutor {
         }.runTaskTimer(plugin, 0, 20);
     }
 
-    private static void selectNewTagger(JavaPlugin plugin, Player player) {
+    public static void selectNewTagger(JavaPlugin plugin, Player player) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
         if (players.size() == 1) {
             return;

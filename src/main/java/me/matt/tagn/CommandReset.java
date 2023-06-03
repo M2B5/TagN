@@ -17,11 +17,11 @@ public class CommandReset implements CommandExecutor {
     int xzMax = 40;
     int xzMin = -40;
     int yMin = 65;
-    int height = 25;
-    int yPillars = 25;
-    int xPillars = 20;
-    int zPillars = 20;
-    int numParticles = 7;
+    int height = 15;
+    int yPillars = 40;
+    int xPillars = 30;
+    int zPillars = 30;
+    int numParticles = 30;
 
     public int xzRand() {
         int r = (int) Math.floor(Math.random() * (2 * xzMax + 1)) - xzMax;
@@ -49,7 +49,7 @@ public class CommandReset implements CommandExecutor {
             Player player = (Player) sender;
             World world = player.getWorld();
 
-            fillArea(xzMin, yMin, xzMin, xzMax, yMin + height, xzMax, world, Material.AIR);
+            fillArea(xzMin, yMin, xzMin, xzMax, yMin + height + 3, xzMax, world, Material.AIR);
 
             for (int i = 0; i < xPillars; i++) {
                 int y = yRand();
@@ -115,7 +115,10 @@ public class CommandReset implements CommandExecutor {
             }
 
             fillArea(xzMin, yMin - 1, xzMin, xzMax, yMin - 1, xzMax, world, Material.CYAN_TERRACOTTA);
-
+            fillArea(xzMin - 1, yMin - 1, xzMin - 1, xzMax + 1, yMin + height + 1, xzMin - 1, world, Material.IRON_BLOCK);
+            fillArea(xzMin - 1, yMin - 1, xzMax + 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
+            fillArea(xzMin - 1, yMin - 1, xzMin - 1, xzMin - 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
+            fillArea(xzMax + 1, yMin - 1, xzMin - 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
         }
 
         return true;
