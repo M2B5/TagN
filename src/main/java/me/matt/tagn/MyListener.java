@@ -95,12 +95,9 @@ public class MyListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-
-        if (!(player.isOp())) {
-            Material placedBlock = event.getItemInHand().getType();
-            if (placedBlock != Material.AIR) {
-                player.getInventory().addItem(new ItemStack(placedBlock, 1));
-            }
+        Material placedBlock = event.getItemInHand().getType();
+        if (placedBlock != Material.AIR) {
+            player.getInventory().addItem(new ItemStack(placedBlock, 1));
         }
     }
 
