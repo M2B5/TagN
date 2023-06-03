@@ -78,6 +78,7 @@ public class MyListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
+        player.setGlowing(true);
     }
 
     @EventHandler
