@@ -1,0 +1,14 @@
+name: tagn
+version: '${project.version}'
+main: me.matt.tagn.Tagn
+api-version: 1.19
+
+commands:
+  reset:
+    description: resets the map
+    usage: /<command>
+    permission: tagn.canreset
+  settagger:
+    description: sets the tagger
+    usage: /<command>
+    permission: tagn.settagger
