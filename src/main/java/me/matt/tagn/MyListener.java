@@ -113,8 +113,13 @@ public class MyListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         int yMax = 82;
         if (event.getBlock().getLocation().getBlockY() > yMax) {
-            event.setCancelled(true);
-            return;
+            if(!event.getPlayer().isOp()) {
+                event.setCancelled(true);
+                return;
+            } else if (event.getBlock().getType() == Material.RED_WOOL || event.getBlock().getType() == Material.LIME_WOOL) {
+                event.setCancelled(true);
+                return;
+            }
         }
         Player player = event.getPlayer();
         Material placedBlock = event.getItemInHand().getType();
