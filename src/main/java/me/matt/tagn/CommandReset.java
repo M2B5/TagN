@@ -19,9 +19,9 @@ public class CommandReset implements CommandExecutor {
     int yMin = 65;
     int height = 25;
     int yPillars = 25;
-    int xPillars = 15;
-    int zPillars = 15;
-    int numParticles = 6;
+    int xPillars = 20;
+    int zPillars = 20;
+    int numParticles = 8;
 
     public int xzRand() {
         int r = (int) Math.floor(Math.random() * (2 * xzMax + 1)) - xzMax;
