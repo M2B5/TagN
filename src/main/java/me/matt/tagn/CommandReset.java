@@ -1,10 +1,6 @@
 package me.matt.tagn;
-
-import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -119,6 +115,13 @@ public class CommandReset implements CommandExecutor {
             fillArea(xzMin - 1, yMin - 1, xzMax + 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
             fillArea(xzMin - 1, yMin - 1, xzMin - 1, xzMin - 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
             fillArea(xzMax + 1, yMin - 1, xzMin - 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
+            fillArea(xzMin - 1, yMin + height + 2, xzMin - 1, xzMax + 1, yMin + height + 10, xzMin - 1, world, Material.BARRIER);
+            fillArea(xzMin - 1, yMin + height + 2, xzMax + 1, xzMax + 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
+            fillArea(xzMin - 1, yMin + height + 2, xzMin - 1, xzMin - 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
+            fillArea(xzMax + 1, yMin + height + 2, xzMin - 1, xzMax + 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
+            fillArea(xzMax + 1, yMin + height + 10, xzMax + 1, xzMin - 1, yMin + height + 10, xzMin - 1, world, Material.BARRIER);
+
+
         }
 
         return true;

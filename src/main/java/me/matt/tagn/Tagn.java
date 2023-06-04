@@ -1,8 +1,6 @@
 package me.matt.tagn;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
@@ -20,6 +18,11 @@ public final class Tagn extends JavaPlugin {
         getServer().getPluginManager().registerEvents(listener, this);
 
         getLogger().info("Enabled");
+
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add taggers");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add runners");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify taggers color red");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify runners color green");
     }
 
     @Override

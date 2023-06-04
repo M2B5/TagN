@@ -1,14 +1,8 @@
 package me.matt.tagn;
 
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -16,23 +10,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import net.kyori.adventure.text.Component;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.NameTagVisibility;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Set;
 
 import static me.matt.tagn.CommandSetTagger.*;
 import static me.matt.tagn.Tagn.*;
@@ -71,18 +55,15 @@ public class MyListener implements Listener {
 
         sendServerMessage(player, "Welcome to TagN!");
 
-        if (tagger != null) {
-            fillInventory(player, Material.LIME_WOOL);
+        Bukkit.getLogger().info(tagger.toString());
+        fillInventory(player, Material.LIME_WOOL);
 
-            player.teleport(new Location(player.getWorld(), 0, 85, 0));
-            player.setGameMode(GameMode.SURVIVAL);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
-            player.setGlowing(true);
-        } else {
-            newTagger(player, null, false, plugin);
-        }
+        player.teleport(new Location(player.getWorld(), 0, 85, 0));
+        player.setGameMode(GameMode.SURVIVAL);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
+
     }
 
     @EventHandler
@@ -158,6 +139,8 @@ public class MyListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        selectNewTagger(plugin, player);
+        if (tagger == player) {
+            selectNewTagger(plugin, player);
+        }
     }
 }
