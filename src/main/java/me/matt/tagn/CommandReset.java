@@ -1,4 +1,5 @@
 package me.matt.tagn;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -41,9 +42,7 @@ public class CommandReset implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            World world = player.getWorld();
+            World world = Bukkit.getWorld("world");
 
             fillArea(xzMin, yMin, xzMin, xzMax, yMin + height + 3, xzMax, world, Material.AIR);
 
@@ -120,9 +119,6 @@ public class CommandReset implements CommandExecutor {
             fillArea(xzMin - 1, yMin + height + 2, xzMin - 1, xzMin - 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
             fillArea(xzMax + 1, yMin + height + 2, xzMin - 1, xzMax + 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
             fillArea(xzMax + 1, yMin + height + 10, xzMax + 1, xzMin - 1, yMin + height + 10, xzMin - 1, world, Material.BARRIER);
-
-
-        }
 
         return true;
     }

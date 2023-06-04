@@ -47,4 +47,18 @@ public final class Tagn extends JavaPlugin {
                         .build()
         );
     }
+
+    public static void serverBroadcast(String string) {
+        Bukkit.getServer().broadcast(Component.text()
+                .append(Component.text("[")
+                        .color(TextColor.color(0xAAAAAA)))
+                .append(Component.text("TagN")
+                        .color(TextColor.color(0xE9114E))
+                        .decoration(TextDecoration.BOLD, true))
+                .append(Component.text("] - ")
+                        .color(TextColor.color(0xAAAAAA)))
+                .append(Component.text(string)
+                        .color(TextColor.color(0xFFFFFF)))
+                .build());
+    }
 }

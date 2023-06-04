@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static me.matt.tagn.MyListener.fillInventory;
+import static me.matt.tagn.Tagn.serverBroadcast;
 
 public class CommandStartRound implements CommandExecutor {
 
@@ -29,7 +30,10 @@ public class CommandStartRound implements CommandExecutor {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
         int random = (int) Math.floor(Math.random() * players.size());
         Player firstInfected = (Player) players.toArray()[random];
+        serverBroadcast("New round starting...");
+        serverBroadcast(firstInfected.getName() + " is the first infected!");
         infect(firstInfected);
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "reset");
         enterArena(firstInfected, plugin);
     }
 
@@ -42,11 +46,35 @@ public class CommandStartRound implements CommandExecutor {
     }
 
     public static void infect(Player player) {
+        boolean allInfected = true;
         infected.add(player);
+
+        //Check if all players are infected
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (!infected.contains(p)) {
+                allInfected = false;
+                break;
+            }
+        }
+
+        //Avoid infinite loop of starting rounds if only one player online
+        Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        if (players.size() < 2) {
+            allInfected = false;
+        }
+
+        //If all players are infected, start the round
+        if (allInfected) {
+            serverBroadcast("All players are infected!");
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
+            return;
+        }
+
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join infected " + player.getName());
         fillInventory(player, Material.RED_WOOL);
     }
 
+    //teleport player into arena with brief slow falling effect
     public static void enterArena(Player player, JavaPlugin plugin) {
         player.setGameMode(GameMode.SPECTATOR);
         player.teleport(new Location(player.getWorld(), 0, 141, 0));

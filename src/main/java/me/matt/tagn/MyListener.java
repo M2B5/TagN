@@ -53,6 +53,9 @@ public class MyListener implements Listener {
         Player player = event.getPlayer();
 
         sendServerMessage(player, "Welcome to TagN!");
+        sendServerMessage(player, "Players glowing red are infected. Players glowing green are survivors.");
+        sendServerMessage(player, "The goal of the game is to survive or infect all survivors!");
+        sendServerMessage(player, "Infected players can hit survivors to infect them, so survivors must run away!");
 
         infect(player);
         enterArena(player, plugin);
