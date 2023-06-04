@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tagn extends JavaPlugin {
@@ -13,16 +14,16 @@ public final class Tagn extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         this.getCommand("reset").setExecutor(new CommandReset());
-        this.getCommand("settagger").setExecutor(new CommandSetTagger(this));
+        this.getCommand("start").setExecutor(new CommandStartRound(this));
         MyListener listener = new MyListener(this);
         getServer().getPluginManager().registerEvents(listener, this);
 
         getLogger().info("Enabled");
 
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add taggers");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add runners");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify taggers color red");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify runners color green");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add infected");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add survivors");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify infected color red");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify survivors color green");
     }
 
     @Override

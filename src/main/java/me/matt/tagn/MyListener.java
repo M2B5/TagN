@@ -17,8 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-
-import static me.matt.tagn.CommandSetTagger.*;
+import static me.matt.tagn.CommandStartRound.*;
 import static me.matt.tagn.Tagn.*;
 
 public class MyListener implements Listener {
@@ -55,15 +54,8 @@ public class MyListener implements Listener {
 
         sendServerMessage(player, "Welcome to TagN!");
 
-        Bukkit.getLogger().info(tagger.toString());
-        fillInventory(player, Material.LIME_WOOL);
-
-        player.teleport(new Location(player.getWorld(), 0, 85, 0));
-        player.setGameMode(GameMode.SURVIVAL);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999999, 1));
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join runners " + player.getName());
-
+        infect(player);
+        enterArena(player, plugin);
     }
 
     @EventHandler
@@ -79,8 +71,10 @@ public class MyListener implements Listener {
         Player attacker = (Player) event.getDamager();
         Player victim = (Player) event.getEntity();
 
-        if (attacker == CommandSetTagger.tagger) {
-            CommandSetTagger.newTagger(victim, attacker, true, plugin);
+        if (infected.contains(attacker)) {
+            if (!infected.contains(victim)) {
+                infect(victim);
+            }
         }
     }
 
@@ -138,9 +132,5 @@ public class MyListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-
-        if (tagger == player) {
-            selectNewTagger(plugin, player);
-        }
     }
 }
