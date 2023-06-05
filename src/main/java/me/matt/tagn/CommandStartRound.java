@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class CommandStartRound implements CommandExecutor {
 
     public static Collection<Player> infected = new ArrayList<>();
     private final JavaPlugin plugin;
+
+    public static BukkitTask gameTimerTask;
 
     public CommandStartRound(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -35,6 +38,10 @@ public class CommandStartRound implements CommandExecutor {
         infect(firstInfected);
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "reset");
         enterArena(firstInfected, plugin);
+        if (gameTimerTask != null) {
+            gameTimerTask.cancel();
+        }
+        gameTimerTask = gameTimer(plugin);
     }
 
     public static void endRound() {
@@ -95,6 +102,51 @@ public class CommandStartRound implements CommandExecutor {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
                     cancel();
                 }
+            }
+        }.runTaskTimer(plugin, 0, 20);
+    }
+
+    public static BukkitTask gameTimer(JavaPlugin plugin) {
+        return new BukkitRunnable() {
+            private int secondsPassed = 0;
+            private int gameLength = 300;
+            private boolean roundEnded = false;
+
+            @Override
+            public void run() {
+                if (!roundEnded) {
+                    if (infected.size() <= 1) {
+                        if (secondsPassed >= 60) {
+                            serverBroadcast("Time's up! Survivors win!");
+                            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
+                            roundEnded = true;
+                        }
+                    } else {
+                        Player firstInfected = infected.iterator().next();
+                        if (firstInfected != null && !firstInfected.isDead()) {
+                            boolean hasInfectedPlayer = false;
+                            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                                if (player != firstInfected && !infected.contains(player)) {
+                                    hasInfectedPlayer = true;
+                                    break;
+                                }
+                            }
+                            if (!hasInfectedPlayer) {
+                                serverBroadcast("First infected took too long! Starting a new round...");
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
+                                roundEnded = true;
+                            }
+                        }
+                    }
+                }
+
+                if (secondsPassed >= gameLength) {
+                    serverBroadcast("Time's up! Survivors win!");
+                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
+                    roundEnded = true;
+                }
+
+                secondsPassed++;
             }
         }.runTaskTimer(plugin, 0, 20);
     }

@@ -78,6 +78,7 @@ public class MyListener implements Listener {
 
         if (infected.contains(attacker)) {
             if (!infected.contains(victim)) {
+                serverBroadcast(victim.displayName() + " has been infected by " + attacker.displayName() + "!");
                 infect(victim);
             }
         }
