@@ -57,6 +57,8 @@ public class MyListener implements Listener {
         sendServerMessage(player, "The goal of the game is to survive or infect all survivors!");
         sendServerMessage(player, "Infected players can hit survivors to infect them, so survivors must run away!");
 
+        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+
         infect(player);
         enterArena(player, plugin);
     }
@@ -135,5 +137,36 @@ public class MyListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        if (infected.contains(player)) {
+            infected.remove(player);
+        }
+        newRoundTest(plugin);
+    }
+
+    public static void newRoundTest(JavaPlugin plugin) {
+        if (infected.size() == 0) {
+            serverBroadcast("Infected player left the game, starting new round.");
+            endRound();
+            startRound(plugin);
+            return;
+        }
+
+        boolean allInfected = true;
+        int survivorCount = 0;
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (!infected.contains(p)) {
+                allInfected = false;
+                survivorCount++;
+            }
+        }
+        if (allInfected) {
+            serverBroadcast("All survivors have been infected, starting new round.");
+            endRound();
+            startRound(plugin);
+        } else if (survivorCount == 1) {
+            serverBroadcast("The last survivor left the game, starting new round.");
+            endRound();
+            startRound(plugin);
+        }
     }
 }
