@@ -1,6 +1,7 @@
 package me.matt.tagn;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -65,22 +66,16 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
-            return; // Ignore if the damage is not caused by a player
-        }
-
-        if (!(event.getEntity() instanceof Player)) {
-            return; // Ignore if the target is not a player
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
+            return; // Ignore if the damage is not caused by a player or the target is not a player
         }
 
         Player attacker = (Player) event.getDamager();
         Player victim = (Player) event.getEntity();
 
-        if (infected.contains(attacker)) {
-            if (!infected.contains(victim)) {
-                serverBroadcast(victim.displayName() + " has been infected by " + attacker.displayName() + "!");
-                infect(victim);
-            }
+        if (infected.contains(attacker) && !infected.contains(victim)) {
+            serverBroadcast(victim.getName() + " has been infected by " + attacker.getName() + "!");
+            infect(victim);
         }
     }
 
@@ -88,8 +83,9 @@ public class MyListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (!(player.isOp())) {
-            if (event.getBlock().getType() == Material.IRON_BLOCK || event.getBlock().getType() == Material.GLASS || event.getBlock().getType() == Material.CYAN_TERRACOTTA) {
+        if (!player.isOp()) {
+            Material blockType = event.getBlock().getType();
+            if (blockType == Material.IRON_BLOCK || blockType == Material.GLASS || blockType == Material.CYAN_TERRACOTTA) {
                 event.setCancelled(true);
             }
         }
@@ -98,17 +94,17 @@ public class MyListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         int yMax = 82;
+
+        Player player = event.getPlayer();
+        Material placedBlock = event.getItemInHand().getType();
+
         if (event.getBlock().getLocation().getBlockY() > yMax) {
-            if(!event.getPlayer().isOp()) {
-                event.setCancelled(true);
-                return;
-            } else if (event.getBlock().getType() == Material.RED_WOOL || event.getBlock().getType() == Material.LIME_WOOL) {
+            if (placedBlock == Material.LIME_WOOL || placedBlock == Material.RED_WOOL) {
                 event.setCancelled(true);
                 return;
             }
         }
-        Player player = event.getPlayer();
-        Material placedBlock = event.getItemInHand().getType();
+
         if (placedBlock != Material.AIR) {
             player.getInventory().addItem(new ItemStack(placedBlock, 1));
         }
@@ -123,14 +119,14 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
-        if (!(event.getPlayer().isOp())) {
+        if (!event.getPlayer().isOp()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (!(event.getPlayer().isOp())) {
+        if (!event.getPlayer().isOp()) {
             event.setCancelled(true);
         }
     }

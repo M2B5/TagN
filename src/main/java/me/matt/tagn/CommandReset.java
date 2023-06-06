@@ -1,40 +1,136 @@
 package me.matt.tagn;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import java.lang.Math;
 
+import java.util.Random;
 
 public class CommandReset implements CommandExecutor {
-    int xzMax = 40;
-    int xzMin = -40;
-    int yMin = 65;
-    int height = 15;
-    int yPillars = 40;
-    int xPillars = 30;
-    int zPillars = 30;
-    int numParticles = 30;
+    private static final int XZ_MAX = 40;
+    private static final int XZ_MIN = -40;
+    private static final int Y_MIN = 65;
+    private static final int HEIGHT = 15;
+    private static final int Y_PILLARS = 40;
+    private static final int X_PILLARS = 30;
+    private static final int Z_PILLARS = 30;
+    private static final int NUM_PARTICLES = 30;
+    private final Random random = new Random();
 
-    public int xzRand() {
-        int r = (int) Math.floor(Math.random() * (2 * xzMax + 1)) - xzMax;
-        return r;
+    private int getRandomXZ() {
+        return random.nextInt(2 * XZ_MAX + 1) - XZ_MAX;
     }
 
-    public int yRand(){
-        int r = (int) Math.floor(Math.random() * height) + yMin;
-        return r;
+    private int getRandomY() {
+        return random.nextInt(HEIGHT) + Y_MIN;
     }
 
-    public void fillArea(int x1, int y1, int z1, int x2, int y2, int z2, World w, Material m){
-        for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-                for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
-                    w.getBlockAt(x, y, z).setType(m);
+    private void generatePillarsX(World world) {
+        for (int i = 0; i < X_PILLARS; i++) {
+            int y = getRandomY();
+            int z = getRandomXZ();
+
+            for (int x = XZ_MIN; x <= XZ_MAX; x++) {
+                world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
+            }
+        }
+    }
+
+    private void generatePillarsY(World world) {
+        for (int i = 0; i < Y_PILLARS; i++) {
+            int x = getRandomXZ();
+            int z = getRandomXZ();
+
+            for (int y = Y_MIN; y <= Y_MIN + HEIGHT; y++) {
+                world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
+            }
+        }
+    }
+
+    private void generatePillarsZ(World world) {
+        for (int i = 0; i < Z_PILLARS; i++) {
+            int x = getRandomXZ();
+            int y = getRandomY();
+
+            for (int z = XZ_MIN; z <= XZ_MAX; z++) {
+                world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
+            }
+        }
+    }
+
+    private void generateParticles(World world) {
+        for (int i = 0; i < NUM_PARTICLES; i++) {
+            int xp = getRandomXZ();
+            int zp = getRandomXZ();
+            int xv = random.nextInt(2) + 1;
+            int zv = 3 - xv;
+            xv *= random.nextInt(2) * 2 - 1;
+            zv *= random.nextInt(2) * 2 - 1;
+
+            for (int y = Y_MIN - 1; y <= Y_MIN + HEIGHT - 2; y++) {
+                int x2 = xp - xv;
+                int z2 = zp - zv;
+
+                if (x2 >= XZ_MAX) {
+                    x2 = XZ_MAX;
+                    xv *= -1;
+                    fillArea(world, xp, y, zp, x2, y + 1, z2, Material.GRAY_WOOL);
+                    x2 = xp;
+                } else if (x2 <= XZ_MIN) {
+                    x2 = XZ_MIN;
+                    xv *= -1;
+                    fillArea(world, xp, y, zp, x2, y + 1, z2, Material.GRAY_WOOL);
+                    x2 = xp;
+                }
+
+                if (z2 >= XZ_MAX) {
+                    z2 = XZ_MAX;
+                    zv *= -1;
+                    fillArea(world, xp, y, zp, x2, y + 1, z2, Material.GRAY_WOOL);
+                    z2 = zp;
+                } else if (z2 <= XZ_MIN) {
+                    z2 = XZ_MIN;
+                    zv *= -1;
+                    fillArea(world, xp, y, zp, x2, y + 1, z2, Material.GRAY_WOOL);
+                    z2 = zp;
+                }
+
+                fillArea(world, xp, y, zp, x2, y + 1, z2, Material.GRAY_WOOL);
+                xp = x2;
+                zp = z2;
+            }
+        }
+    }
+
+    private void generateBorders(World world) {
+        fillArea(world, XZ_MIN, Y_MIN - 1, XZ_MIN, XZ_MAX, Y_MIN - 1, XZ_MAX, Material.CYAN_TERRACOTTA);
+        fillArea(world, XZ_MIN - 1, Y_MIN - 1, XZ_MIN - 1, XZ_MAX + 1, Y_MIN + HEIGHT + 1, XZ_MIN - 1, Material.IRON_BLOCK);
+        fillArea(world, XZ_MIN - 1, Y_MIN - 1, XZ_MAX + 1, XZ_MAX + 1, Y_MIN + HEIGHT + 1, XZ_MAX + 1, Material.IRON_BLOCK);
+        fillArea(world, XZ_MIN - 1, Y_MIN - 1, XZ_MIN - 1, XZ_MIN - 1, Y_MIN + HEIGHT + 1, XZ_MAX + 1, Material.IRON_BLOCK);
+        fillArea(world, XZ_MAX + 1, Y_MIN - 1, XZ_MIN - 1, XZ_MAX + 1, Y_MIN + HEIGHT + 1, XZ_MAX + 1, Material.IRON_BLOCK);
+        fillArea(world, XZ_MIN - 1, Y_MIN + HEIGHT + 2, XZ_MIN - 1, XZ_MAX + 1, Y_MIN + HEIGHT + 10, XZ_MIN - 1, Material.BARRIER);
+        fillArea(world, XZ_MIN - 1, Y_MIN + HEIGHT + 2, XZ_MAX + 1, XZ_MAX + 1, Y_MIN + HEIGHT + 10, XZ_MAX + 1, Material.BARRIER);
+        fillArea(world, XZ_MIN - 1, Y_MIN + HEIGHT + 2, XZ_MIN - 1, XZ_MIN - 1, Y_MIN + HEIGHT + 10, XZ_MAX + 1, Material.BARRIER);
+        fillArea(world, XZ_MAX + 1, Y_MIN + HEIGHT + 2, XZ_MIN - 1, XZ_MAX + 1, Y_MIN + HEIGHT + 10, XZ_MAX + 1, Material.BARRIER);
+        fillArea(world, XZ_MAX + 1, Y_MIN + HEIGHT + 10, XZ_MAX + 1, XZ_MIN - 1, Y_MIN + HEIGHT + 10, XZ_MIN - 1, Material.BARRIER);
+    }
+
+    private void fillArea(World world, int x1, int y1, int z1, int x2, int y2, int z2, Material material) {
+        int minX = Math.min(x1, x2);
+        int maxX = Math.max(x1, x2);
+        int minY = Math.min(y1, y2);
+        int maxY = Math.max(y1, y2);
+        int minZ = Math.min(z1, z2);
+        int maxZ = Math.max(z1, z2);
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    world.getBlockAt(x, y, z).setType(material);
                 }
             }
         }
@@ -42,83 +138,16 @@ public class CommandReset implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, String label, String[] args) {
-            World world = Bukkit.getWorld("world");
+        World world = Bukkit.getWorld("world");
 
-            fillArea(xzMin, yMin, xzMin, xzMax, yMin + height + 3, xzMax, world, Material.AIR);
+        // Clear the area
+        fillArea(world, XZ_MIN, Y_MIN, XZ_MIN, XZ_MAX, Y_MIN + HEIGHT + 3, XZ_MAX, Material.AIR);
 
-            for (int i = 0; i < xPillars; i++) {
-                int y = yRand();
-                int z = xzRand();
-                for (int x = xzMin; x <= xzMax; x++) {
-                    world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
-                }
-            }
-
-            for (int i = 0; i < yPillars; i++) {
-                int x = xzRand();
-                int z = xzRand();
-                for (int y = yMin; y <= yMin + height; y++) {
-                    world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
-                }
-            }
-
-            for (int i = 0; i < zPillars; i++) {
-                int x = xzRand();
-                int y = yRand();
-                for (int z = xzMin; z <= xzMax; z++) {
-                    world.getBlockAt(x, y, z).setType(Material.GRAY_WOOL);
-                }
-            }
-
-            for (int i = 0; i < numParticles; i++) {
-                int xp = xzRand();
-                int zp = xzRand();
-                int xv = (int) Math.floor(Math.random()*2) + 1;
-                int zv = 3 - xv;
-                xv *= (int) Math.floor(Math.random()*2)*2 - 1;
-                zv *= (int) Math.floor(Math.random()*2)*2 - 1;
-                for (int y = yMin - 1; y <= yMin + height - 2; y++) {
-                    int x2 = xp - xv;
-                    int z2 = zp - zv;
-                    if (x2 >= xzMax) {
-                        x2 = xzMax;
-                        xv *= -1;
-                        fillArea(xp, y, zp, x2, y + 1, z2, world, Material.GRAY_WOOL);
-                        x2 = xp;
-                    } else if (x2 <= xzMin) {
-                        x2 = xzMin;
-                        xv *= -1;
-                        fillArea(xp, y, zp, x2, y + 1, z2, world, Material.GRAY_WOOL);
-                        x2 = xp;
-                    }
-                    if (z2 >= xzMax) {
-                        z2 = xzMax;
-                        zv *= -1;
-                        fillArea(xp, y, zp, x2, y + 1, z2, world, Material.GRAY_WOOL);
-                        z2 = zp;
-                    } else if (z2 <= xzMin) {
-                        z2 = xzMin;
-                        zv *= -1;
-                        fillArea(xp, y, zp, x2, y + 1, z2, world, Material.GRAY_WOOL);
-                        z2 = zp;
-                    }
-
-                    fillArea(xp, y, zp, x2, y + 1, z2, world, Material.GRAY_WOOL);
-                    xp = x2;
-                    zp = z2;
-                }
-            }
-
-            fillArea(xzMin, yMin - 1, xzMin, xzMax, yMin - 1, xzMax, world, Material.CYAN_TERRACOTTA);
-            fillArea(xzMin - 1, yMin - 1, xzMin - 1, xzMax + 1, yMin + height + 1, xzMin - 1, world, Material.IRON_BLOCK);
-            fillArea(xzMin - 1, yMin - 1, xzMax + 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
-            fillArea(xzMin - 1, yMin - 1, xzMin - 1, xzMin - 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
-            fillArea(xzMax + 1, yMin - 1, xzMin - 1, xzMax + 1, yMin + height + 1, xzMax + 1, world, Material.IRON_BLOCK);
-            fillArea(xzMin - 1, yMin + height + 2, xzMin - 1, xzMax + 1, yMin + height + 10, xzMin - 1, world, Material.BARRIER);
-            fillArea(xzMin - 1, yMin + height + 2, xzMax + 1, xzMax + 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
-            fillArea(xzMin - 1, yMin + height + 2, xzMin - 1, xzMin - 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
-            fillArea(xzMax + 1, yMin + height + 2, xzMin - 1, xzMax + 1, yMin + height + 10, xzMax + 1, world, Material.BARRIER);
-            fillArea(xzMax + 1, yMin + height + 10, xzMax + 1, xzMin - 1, yMin + height + 10, xzMin - 1, world, Material.BARRIER);
+        generatePillarsX(world);
+        generatePillarsY(world);
+        generatePillarsZ(world);
+        generateParticles(world);
+        generateBorders(world);
 
         return true;
     }

@@ -5,51 +5,56 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tagn extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        this.getCommand("reset").setExecutor(new CommandReset());
-        this.getCommand("start").setExecutor(new CommandStartRound(this));
-        MyListener listener = new MyListener(this);
-        getServer().getPluginManager().registerEvents(listener, this);
+        registerCommands();
+        registerListeners();
 
         getLogger().info("Enabled");
 
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add infected");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team add survivors");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify infected color red");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team modify survivors color green");
+        setupTeams();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         getLogger().info("Disabled");
     }
 
-    public static void sendServerMessage(Player player, String string) {
-        player.sendMessage(
-                Component.text()
-                        .append(Component.text("[")
-                                .color(TextColor.color(0xAAAAAA)))
-                        .append(Component.text("TagN")
-                                .color(TextColor.color(0xE9114E))
-                                .decoration(TextDecoration.BOLD, true))
-                        .append(Component.text("] - ")
-                                .color(TextColor.color(0xAAAAAA)))
-                        .append(Component.text(string)
-                                .color(TextColor.color(0xFFFFFF)))
-                        .build()
-        );
+    private void registerCommands() {
+        getCommand("reset").setExecutor(new CommandReset());
+        getCommand("start").setExecutor(new CommandStartRound(this));
     }
 
-    public static void serverBroadcast(String string) {
-        Bukkit.getServer().broadcast(Component.text()
+    private void registerListeners() {
+        MyListener listener = new MyListener(this);
+        getServer().getPluginManager().registerEvents(listener, this);
+    }
+
+    private void setupTeams() {
+        executeConsoleCommand("team add infected");
+        executeConsoleCommand("team add survivors");
+        executeConsoleCommand("team modify infected color red");
+        executeConsoleCommand("team modify survivors color green");
+    }
+
+    private void executeConsoleCommand(String command) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+    }
+
+    public static void sendServerMessage(Player player, String message) {
+        player.sendMessage(buildTagNMessage(message));
+    }
+
+    public static void serverBroadcast(String message) {
+        Bukkit.getServer().broadcast(buildTagNMessage(message));
+    }
+
+    private static Component buildTagNMessage(String message) {
+        return Component.text()
                 .append(Component.text("[")
                         .color(TextColor.color(0xAAAAAA)))
                 .append(Component.text("TagN")
@@ -57,8 +62,8 @@ public final class Tagn extends JavaPlugin {
                         .decoration(TextDecoration.BOLD, true))
                 .append(Component.text("] - ")
                         .color(TextColor.color(0xAAAAAA)))
-                .append(Component.text(string)
+                .append(Component.text(message)
                         .color(TextColor.color(0xFFFFFF)))
-                .build());
+                .build();
     }
 }

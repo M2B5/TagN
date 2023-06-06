@@ -53,25 +53,13 @@ public class CommandStartRound implements CommandExecutor {
     }
 
     public static void infect(Player player) {
-        boolean allInfected = true;
         infected.add(player);
 
-        //Check if all players are infected
-        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            if (!infected.contains(p)) {
-                allInfected = false;
-                break;
-            }
-        }
+        // Check if all players are infected
+        int onlinePlayers = Bukkit.getServer().getOnlinePlayers().size();
+        boolean allInfected = infected.size() == onlinePlayers;
 
-        //Avoid infinite loop of starting rounds if only one player online
-        Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
-        if (players.size() < 2) {
-            allInfected = false;
-        }
-
-        //If all players are infected, start the round
-        if (allInfected) {
+        if (allInfected && !(onlinePlayers < 2)) {
             serverBroadcast("All players are infected!");
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
             return;
