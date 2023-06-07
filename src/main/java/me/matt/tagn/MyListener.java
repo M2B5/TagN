@@ -1,5 +1,9 @@
 package me.matt.tagn;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,14 +13,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.regex.Pattern;
 
 import static me.matt.tagn.CommandStartRound.*;
 import static me.matt.tagn.Tagn.*;
@@ -51,12 +54,53 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        event.joinMessage(null);
         Player player = event.getPlayer();
 
-        sendServerMessage(player, "Welcome to TagN!");
-        sendServerMessage(player, "Players glowing red are infected. Players glowing green are survivors.");
-        sendServerMessage(player, "The goal of the game is to survive or infect all survivors!");
-        sendServerMessage(player, "Infected players can hit survivors to infect them, so survivors must run away!");
+        Component[] components = new Component[8];
+        components[0] = Component.text("");
+        components[1] = Component.text()
+                .append(Component.text(" Welcome to ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("TagN!")
+                        .color(TextColor.color(0xE9114E))
+                        .decoration(TextDecoration.BOLD, true))
+                .build();
+        components[2] = Component.text("");
+        components[3] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("Players glowing ")
+                        .color(NamedTextColor.WHITE))
+                .append(Component.text("red ")
+                        .color(NamedTextColor.RED))
+                .append(Component.text("are infected!")
+                        .color(NamedTextColor.WHITE))
+                .build();
+        components[4] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("Players glowing ")
+                        .color(NamedTextColor.WHITE))
+                .append(Component.text("green ")
+                        .color(NamedTextColor.GREEN))
+                .append(Component.text("are survivors!")
+                        .color(NamedTextColor.WHITE))
+                .build();
+        components[5] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("Infected should tag survivors.")
+                        .color(NamedTextColor.WHITE))
+                .build();
+        components[6] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("Survivors should run from infected.")
+                        .color(NamedTextColor.WHITE))
+                .build();
+        components[7] = Component.text("");
+        ImageCode.displayPlayerFaceWithText(player, components);
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
 
@@ -118,6 +162,21 @@ public class MyListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        String message = event.getMessage();
+
+        if (message.contains("https://") || message.contains("http://") || message.contains("www.") || message.contains(".com")) {
+            // Do something when a link is detected
+            if (event.getPlayer().isOp()) {
+                //loop all players
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    ImageCode.displayImage(player, message);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
         if (!event.getPlayer().isOp()) {
             event.setCancelled(true);
@@ -133,6 +192,7 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        event.quitMessage(null);
         Player player = event.getPlayer();
         if (infected.contains(player)) {
             infected.remove(player);
