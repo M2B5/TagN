@@ -159,11 +159,11 @@ public class MyListener implements Listener {
         if (allInfected) {
             serverBroadcast("All survivors have been infected, starting new round.");
             endRound();
-            startRound(plugin);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 1L);
         } else if (survivorCount == 1) {
             serverBroadcast("The last survivor left the game, starting new round.");
             endRound();
-            startRound(plugin);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 1L);
         }
     }
 }
