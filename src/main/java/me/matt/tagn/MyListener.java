@@ -100,7 +100,7 @@ public class MyListener implements Listener {
                         .color(NamedTextColor.WHITE))
                 .build();
         components[7] = Component.text("");
-        ImageCode.displayPlayerFaceWithText(player, components);
+        ImageCode.displayPlayerFaceWithText(player, player, components);
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
 

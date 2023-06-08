@@ -1,5 +1,9 @@
 package me.matt.tagn;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,7 +38,27 @@ public class CommandStartRound implements CommandExecutor {
         int random = (int) Math.floor(Math.random() * players.size());
         Player firstInfected = (Player) players.toArray()[random];
         serverBroadcast("New round starting...");
-        serverBroadcast(firstInfected.getName() + " is the first infected!");
+        Component[] components = new Component[8];
+        components[0] = Component.text("");
+        components[1] = Component.text()
+                .append(Component.text(" " + firstInfected.getName())
+                        .color(TextColor.color(0xE9114E))
+                        .decoration(TextDecoration.BOLD, true))
+                .build();
+        components[2] = Component.text("");
+        components[3] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("They are the first infected!")
+                        .color(TextColor.color(0xFFFFFF)))
+                .build();
+        components[4] = Component.text("");
+        components[5] = Component.text("");
+        components[6] = Component.text("");
+        components[7] = Component.text("");
+        for (Player player : players) {
+            ImageCode.displayPlayerFaceWithText(player, firstInfected, components);
+        }
         infect(firstInfected);
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "reset");
         enterArena(firstInfected, plugin);

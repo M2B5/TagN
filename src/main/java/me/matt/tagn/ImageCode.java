@@ -14,9 +14,9 @@ public class ImageCode {
         String imageUrl = "https://minotar.net/avatar/" + player.getName() + "/8";
         displayImage(player, imageUrl);
     }
-    public static void displayPlayerFaceWithText(Player player, Component[] components) {
-        String imageUrl = "https://minotar.net/avatar/" + player.getName() + "/8";
-        displayImageWithText(player, imageUrl, components);
+    public static void displayPlayerFaceWithText(Player recipient, Player face, Component[] components) {
+        String imageUrl = "https://minotar.net/avatar/" + face.getName() + "/8";
+        displayImageWithText(recipient, imageUrl, components);
     }
     public static void displayImage(Player player, String imageUrl) {
         int[][] imgArray = convertImageToArray(imageUrl);
