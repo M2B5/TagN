@@ -19,3 +19,6 @@ commands:
     description: adds wool colour
     usage: /<command> <player> <color>
     permission: tagn.addwool
+  discord:
+    description: invites to discord
+    usage: /<command>

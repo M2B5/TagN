@@ -32,6 +32,7 @@ public final class Tagn extends JavaPlugin {
         getCommand("start").setExecutor(new CommandStartRound(this));
         getCommand("addwool").setExecutor(new CommandAddWool(this));
         getCommand("wool").setExecutor(new CommandWool(this));
+        getCommand("discord").setExecutor(new CommandDiscord());
     }
 
     private void registerListeners() {
