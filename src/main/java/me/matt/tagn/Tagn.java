@@ -8,9 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tagn extends JavaPlugin {
+    private static Tagn instance;
 
     @Override
     public void onEnable() {
+        instance = this;
+
         registerCommands();
         registerListeners();
 
@@ -27,6 +30,8 @@ public final class Tagn extends JavaPlugin {
     private void registerCommands() {
         getCommand("reset").setExecutor(new CommandReset());
         getCommand("start").setExecutor(new CommandStartRound(this));
+        getCommand("addwool").setExecutor(new CommandAddWool(this));
+        getCommand("wool").setExecutor(new CommandWool(this));
     }
 
     private void registerListeners() {
@@ -65,5 +70,9 @@ public final class Tagn extends JavaPlugin {
                 .append(Component.text(message)
                         .color(TextColor.color(0xFFFFFF)))
                 .build();
+    }
+
+    public static Tagn getInstance() {
+        return instance;
     }
 }

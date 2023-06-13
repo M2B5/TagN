@@ -143,7 +143,7 @@ public class MyListener implements Listener {
         Material placedBlock = event.getItemInHand().getType();
 
         if (event.getBlock().getLocation().getBlockY() > yMax) {
-            if (placedBlock == Material.LIME_WOOL || placedBlock == Material.RED_WOOL) {
+            if (placedBlock == Material.LIME_WOOL || placedBlock == Material.RED_WOOL || !player.isOp()) {
                 event.setCancelled(true);
                 return;
             }
@@ -219,11 +219,11 @@ public class MyListener implements Listener {
         if (allInfected) {
             serverBroadcast("All survivors have been infected, starting new round.");
             endRound();
-            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 5L);
         } else if (survivorCount == 1) {
             serverBroadcast("The last survivor left the game, starting new round.");
             endRound();
-            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> startRound(plugin), 5L);
         }
     }
 }

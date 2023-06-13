@@ -72,7 +72,7 @@ public class CommandStartRound implements CommandExecutor {
         infected.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "team join survivors " + player.getName());
-            fillInventory(player, Material.LIME_WOOL);
+            fillInventory(player, CommandWool.getWool(player));
         }
     }
 

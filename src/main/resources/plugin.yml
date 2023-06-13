@@ -12,3 +12,10 @@ commands:
     description: starts round
     usage: /<command>
     permission: tagn.startround
+  wool:
+    description: sets wool colour
+    usage: /<command> <color> e.g. /wool light_blue
+  addwool:
+    description: adds wool colour
+    usage: /<command> <player> <color>
+    permission: tagn.addwool
