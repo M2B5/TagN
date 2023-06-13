@@ -19,9 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.regex.Pattern;
-
-import static me.matt.tagn.CommandStartRound.*;
+import static me.matt.tagn.Commands.CommandStartRound.*;
 import static me.matt.tagn.Tagn.*;
 
 public class MyListener implements Listener {

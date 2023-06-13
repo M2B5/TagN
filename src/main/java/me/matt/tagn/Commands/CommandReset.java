@@ -1,4 +1,4 @@
-package me.matt.tagn;
+package me.matt.tagn.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
