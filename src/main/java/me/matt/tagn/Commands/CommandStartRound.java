@@ -43,7 +43,7 @@ public class CommandStartRound implements CommandExecutor {
         components[0] = Component.text("");
         components[1] = Component.text()
                 .append(Component.text(" " + firstInfected.getName())
-                        .color(TextColor.color(0xE9114E))
+                        .color(TextColor.color(0x95DFDA))
                         .decoration(TextDecoration.BOLD, true))
                 .build();
         components[2] = Component.text("");
@@ -121,33 +121,46 @@ public class CommandStartRound implements CommandExecutor {
 
     public static BukkitTask gameTimer(JavaPlugin plugin) {
         return new BukkitRunnable() {
-            private int secondsPassed = 0;
-            private int gameLength = 300;
+            private double secondsPassed = 0;
+            private double gameLength = 180;
+            private double onePlayerLeft = 60;
             private boolean roundEnded = false;
 
             @Override
             public void run() {
+                // Check if the round has not ended
                 if (!roundEnded) {
+                    // Check if there is only one infected player or less
                     if (infected.size() <= 1) {
+                        // Check if 60 seconds have passed
                         if (secondsPassed >= 60) {
                             serverBroadcast("Time's up! Survivors win!");
                             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
                             roundEnded = true;
+                        } else {
+                            // Send action bar with remaining time to all players
+                            sendActionBarToAllPlayers(plugin, onePlayerLeft - secondsPassed);
                         }
                     } else {
+                        // Find the first infected player
                         Player firstInfected = infected.iterator().next();
                         if (firstInfected != null && !firstInfected.isDead()) {
                             boolean hasInfectedPlayer = false;
+                            // Check if there are any uninfected players left
                             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                                 if (player != firstInfected && !infected.contains(player)) {
                                     hasInfectedPlayer = true;
                                     break;
                                 }
                             }
+                            // If there are no uninfected players left, start a new round
                             if (!hasInfectedPlayer) {
                                 serverBroadcast("First infected took too long! Starting a new round...");
                                 Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "start");
                                 roundEnded = true;
+                            } else {
+                                // Send action bar with remaining time to all players
+                                sendActionBarToAllPlayers(plugin, gameLength - secondsPassed);
                             }
                         }
                     }
@@ -159,10 +172,24 @@ public class CommandStartRound implements CommandExecutor {
                     roundEnded = true;
                 }
 
-                secondsPassed++;
+                secondsPassed += 1/20.0;
             }
-        }.runTaskTimer(plugin, 0, 20);
+
+            private void sendActionBarToAllPlayers(JavaPlugin plugin, double remainingTime) {
+                int minutes = (int) remainingTime / 60;
+                int seconds = (int) remainingTime % 60;
+                int milliseconds = (int) ((remainingTime % 1) * 1000);
+
+                String formattedTime = String.format("%02d:%02d:%03d", minutes, seconds, milliseconds);
+                String actionBarMessage = "Time Remaining: " + formattedTime;
+
+                for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                    player.sendActionBar(actionBarMessage);
+                }
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
+
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

@@ -7,6 +7,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public final class Tagn extends JavaPlugin {
     private static Tagn instance;
@@ -21,6 +23,8 @@ public final class Tagn extends JavaPlugin {
         getLogger().info("Enabled");
 
         setupTeams();
+
+        startMessages();
     }
 
     @Override
@@ -65,16 +69,27 @@ public final class Tagn extends JavaPlugin {
                 .append(Component.text("[")
                         .color(TextColor.color(0xAAAAAA)))
                 .append(Component.text("TagN")
-                        .color(TextColor.color(0xE9114E))
+                        .color(TextColor.color(0x95DFDA))
                         .decoration(TextDecoration.BOLD, true))
                 .append(Component.text("] - ")
                         .color(TextColor.color(0xAAAAAA)))
                 .append(Component.text(message)
-                        .color(TextColor.color(0xFFFFFF)))
+                        .color(TextColor.color(0x95DFDA)))
                 .build();
     }
 
     public static Tagn getInstance() {
         return instance;
     }
+
+    public void startMessages() {
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                serverBroadcast(ServerMessage.getString());
+            }
+        };
+        runnable.runTaskTimerAsynchronously(this, 0, 1200);
+    }
+
 }

@@ -52,7 +52,6 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        event.joinMessage(null);
         Player player = event.getPlayer();
 
         Component[] components = new Component[8];
@@ -61,7 +60,7 @@ public class MyListener implements Listener {
                 .append(Component.text(" Welcome to ")
                         .color(NamedTextColor.GRAY))
                 .append(Component.text("TagN!")
-                        .color(TextColor.color(0xE9114E))
+                        .color(TextColor.color(0x95DFDA))
                         .decoration(TextDecoration.BOLD, true))
                 .build();
         components[2] = Component.text("");
@@ -97,7 +96,14 @@ public class MyListener implements Listener {
                 .append(Component.text("Survivors should run from infected.")
                         .color(NamedTextColor.WHITE))
                 .build();
-        components[7] = Component.text("");
+        components[7] = Component.text()
+                .append(Component.text(" ⋙ ")
+                        .color(NamedTextColor.GRAY))
+                .append(Component.text("/discord ")
+                        .color(NamedTextColor.LIGHT_PURPLE))
+                .append(Component.text("to join our Discord!")
+                        .color(NamedTextColor.WHITE))
+                .build();
         ImageCode.displayPlayerFaceWithText(player, player, components);
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));

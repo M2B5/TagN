@@ -141,7 +141,7 @@ public class CommandReset implements CommandExecutor {
         World world = Bukkit.getWorld("world");
 
         // Clear the area
-        fillArea(world, XZ_MIN, Y_MIN, XZ_MIN, XZ_MAX, Y_MIN + HEIGHT + 3, XZ_MAX, Material.AIR);
+        fillArea(world, XZ_MIN, Y_MIN, XZ_MIN, XZ_MAX, Y_MIN + HEIGHT + 10, XZ_MAX, Material.AIR);
 
         generatePillarsX(world);
         generatePillarsY(world);
